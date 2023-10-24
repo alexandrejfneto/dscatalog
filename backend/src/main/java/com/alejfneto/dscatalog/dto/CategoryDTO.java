@@ -19,5 +19,13 @@ public class CategoryDTO {
 		id = entity.getId();
 		name = entity.getName();
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
 	
 }
