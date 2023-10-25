@@ -11,32 +11,47 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alejfneto.dscatalog.dto.CategoryDTO;
 import com.alejfneto.dscatalog.entities.Category;
 import com.alejfneto.dscatalog.repositories.CategoryRepository;
-import com.alejfneto.dscatalog.services.exceptions.EntityNotFoundException;
+import com.alejfneto.dscatalog.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class CategoryService {
-	
+
 	@Autowired
 	private CategoryRepository repository;
-	
-	@Transactional (readOnly=true)
-	public List<CategoryDTO> findAll(){
-		List <Category> list = repository.findAll();
+
+	@Transactional(readOnly = true)
+	public List<CategoryDTO> findAll() {
+		List<Category> list = repository.findAll();
 		return list.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
 	}
-	
-	@Transactional (readOnly=true)
+
+	@Transactional(readOnly = true)
 	public CategoryDTO findByID(Long id) {
 		Optional<Category> obj = repository.findById(id);
-		CategoryDTO catDTO = new CategoryDTO(obj.orElseThrow(()-> new EntityNotFoundException("Id não encontrado")));
+		CategoryDTO catDTO = new CategoryDTO(obj.orElseThrow(() -> new ResourceNotFoundException("Id não encontrado")));
 		return catDTO;
 	}
-	
+
 	@Transactional
 	public CategoryDTO insert(CategoryDTO catDto) {
-		Category cat = new Category (null, catDto.getName());
+		Category cat = new Category(null, catDto.getName());
 		cat = repository.save(cat);
 		return new CategoryDTO(cat);
+	}
+
+	@Transactional
+	public CategoryDTO update(Long id, CategoryDTO catDto) {
+		try {
+			Category cat = repository.getReferenceById(id);
+			cat.setName(catDto.getName());
+			cat = repository.save(cat);
+			return new CategoryDTO(cat);
+		}
+		catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException ("Id não encontrado: " + id);
+		}
 	}
 
 }
