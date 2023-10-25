@@ -31,5 +31,12 @@ public class CategoryService {
 		CategoryDTO catDTO = new CategoryDTO(obj.orElseThrow(()-> new EntityNotFoundException("Id não encontrado")));
 		return catDTO;
 	}
+	
+	@Transactional
+	public CategoryDTO insert(CategoryDTO catDto) {
+		Category cat = new Category (null, catDto.getName());
+		cat = repository.save(cat);
+		return new CategoryDTO(cat);
+	}
 
 }
