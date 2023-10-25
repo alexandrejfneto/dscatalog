@@ -47,11 +47,8 @@ public class ProductService {
 
 	@Transactional
 	public ProductDTO insert(ProductDTO dto) {
-		Product prod = new Product(null, dto.getName(), dto.getDescription(), dto.getPrice(), dto.getImgUrl(), Instant.now());
-		for (CategoryDTO cat : dto.getCategories()) {
-			Category catEntity = categoryRepository.getReferenceById(cat.getId());
-			prod.getCategories().add(new Category(catEntity.getId(),catEntity.getName()));
-		}
+		Product prod = new Product();
+		prod = dtoToEntity(dto, prod);
 		prod = repository.save(prod);
 		return new ProductDTO(prod, prod.getCategories());
 	}
@@ -60,15 +57,7 @@ public class ProductService {
 	public ProductDTO update(Long id, ProductDTO dto) {
 		try {
 			Product prod = repository.getReferenceById(id);
-			prod.setName(dto.getName());
-			prod.setDescription(dto.getDescription());
-			prod.setPrice(dto.getPrice());
-			prod.setImgUrl(dto.getImgUrl());
-			prod.setDate(Instant.now());
-			for (CategoryDTO cat : dto.getCategories()) {
-				Category catEntity = categoryRepository.getReferenceById(cat.getId());
-				prod.getCategories().add(new Category(catEntity.getId(),catEntity.getName()));
-			}
+			prod = dtoToEntity(dto, prod);
 			prod = repository.save(prod);
 			return new ProductDTO(prod, prod.getCategories());
 		} catch (EntityNotFoundException e) {
@@ -86,6 +75,20 @@ public class ProductService {
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Falha de integridade referencial");
 		}
+	}
+	
+	private Product dtoToEntity(ProductDTO dto, Product entity) {
+		entity.setName(dto.getName());
+		entity.setDescription(dto.getDescription());
+		entity.setPrice(dto.getPrice());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setDate(Instant.now());
+		entity.getCategories().clear();
+		for (CategoryDTO cat : dto.getCategories()) {
+			Category catEntity = categoryRepository.getReferenceById(cat.getId());
+			entity.getCategories().add(new Category(catEntity.getId(),catEntity.getName()));
+		}
+		return entity;
 	}
 
 }
