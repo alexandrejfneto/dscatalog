@@ -101,6 +101,7 @@ public class ProductServiceTests {
 		Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
 			service.delete(nonExistingId);
 		});
+		Mockito.verify(repository, Mockito.never()).deleteById(existingId);
 		
 	}
 	
@@ -110,6 +111,7 @@ public class ProductServiceTests {
 		Assertions.assertThrows(DatabaseException.class, ()-> {
 			service.delete(dependentId);
 		});
+		Mockito.verify(repository, Mockito.times(1)).deleteById(dependentId);
 		
 	}
 	
@@ -136,6 +138,7 @@ public class ProductServiceTests {
 		ProductDTO result = service.update(existingId, productDTO);
 		
 		Assertions.assertNotNull(result);
+		Mockito.verify(repository).save(product);
 		
 	}
 	

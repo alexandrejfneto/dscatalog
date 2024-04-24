@@ -16,6 +16,7 @@ public class ProductRepositoryTests {
 	
 	@Autowired
 	private ProductRepository repository;
+	
 	private Long existingId;
 	private Long nonExistingId;
 	private Long totalProductsInitial = 25L;
