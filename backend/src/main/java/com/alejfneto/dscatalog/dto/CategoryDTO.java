@@ -11,7 +11,7 @@ public class CategoryDTO {
 	}
 
 	public CategoryDTO(Long id, String name) {
-		id = id;
+		this.id = id;
 		this.name = name;
 	}
 	

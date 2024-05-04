@@ -7,13 +7,26 @@ import java.util.Set;
 import com.alejfneto.dscatalog.entities.Category;
 import com.alejfneto.dscatalog.entities.Product;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 public class ProductDTO {
 	
 	private Long id;
+	
+	@Size (min = 5, max = 60, message = "Nome deve ter entre 5 e 60 caracteres!")
+	@NotBlank (message ="Campo obrigatório!")
 	private String name;
+	
 	private String description;
+	@Positive (message = "O preço deve ter um valor positivo!")
 	private Double price;
+	
 	private String imgUrl;
+	
+	@PastOrPresent (message = "A data não pode ser futura!")
 	private Instant date;
 	
 	private Set<CategoryDTO> categories = new HashSet<>();
