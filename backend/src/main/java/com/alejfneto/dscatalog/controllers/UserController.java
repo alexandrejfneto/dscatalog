@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.alejfneto.dscatalog.dto.UserDTO;
 import com.alejfneto.dscatalog.dto.UserInsertDTO;
+import com.alejfneto.dscatalog.dto.UserUpdateDTO;
 import com.alejfneto.dscatalog.services.UserService;
 
 import jakarta.validation.Valid;
@@ -49,7 +50,7 @@ public class UserController {
 	}
 	
 	@PutMapping (value = "/{id}")
-	public ResponseEntity<UserDTO> update (@PathVariable Long id, @Valid @RequestBody UserDTO dto){
+	public ResponseEntity<UserDTO> update (@PathVariable Long id, @Valid @RequestBody UserUpdateDTO dto){
 		UserDTO userDto = service.update (id, dto);
 		return ResponseEntity.ok().body(userDto);
 	}
