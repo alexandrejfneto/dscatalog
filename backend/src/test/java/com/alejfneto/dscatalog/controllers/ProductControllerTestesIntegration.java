@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alejfneto.dscatalog.dto.ProductDTO;
 import com.alejfneto.dscatalog.tests.Factory;
+import com.alejfneto.dscatalog.tests.TokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -30,11 +31,16 @@ public class ProductControllerTestesIntegration {
 	@Autowired
 	private ObjectMapper objectmapper;
 	
+	@Autowired
+	private TokenUtil tokenUtil;
+	
 	private Long existingId;
 	private Long nonExistingId;
 	private Long dependentId;
 	private Long countTotalProducts;
 	ProductDTO productDTO;
+	
+	private String username, password, bearerToken;
 	
 	@BeforeEach
 	void setUp() throws Exception{
@@ -43,6 +49,12 @@ public class ProductControllerTestesIntegration {
 		dependentId = 2L;
 		countTotalProducts = 25L;
 		productDTO = Factory.createProductDTO();
+		
+		username = "maria@gmail.com";
+		password = "123456";
+		
+		bearerToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
+		//bearerToken = "eyJraWQiOiI5YzY2ODA5Yy03YTc5LTQwOTItODY5Yy02ZjFlMTQzOTBkYWQiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsIm5iZiI6MTcxNTYyNzY1NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIiwiZXhwIjoxNzE1NzE0MDU3LCJpYXQiOjE3MTU2Mjc2NTcsImF1dGhvcml0aWVzIjpbIlJPTEVfT1BFUkFUT1IiLCJST0xFX0FETUlOIl0sInVzZXJuYW1lIjoibWFyaWFAZ21haWwuY29tIn0.bb52xlEnH1Tvcl6uye8ZnJglDmmVRNywxdMJjIBSodhKxtqYYWIm4yMJ0Za4pPLCmKzpx7Mq4E1LnwU9nI6-vPMNadNlt9HjGkZ6LlwfD6dd9nlcQROc9eWcXs19kUNoTQd_nCl76Rlkcd29qRczvFELkMMtOppEaAtO3kwF-_YuJj5BKOwgqVwxgxH3_cT9eqg9Fp4eWD72kWnsnz9u0xkDKxNez5LUE8-b8K1IQjsfgPSZslBNrBt0Q6BE4VLyaIIwKooG06BIfO8zDUJsiaPbZx0_yiYwRBC5ZAy276gMAzrlm2r0vRHo8DRWkGLq0ZAtbrlltknMHgQuEshePw";
 	}
 	
 	@Test
@@ -69,6 +81,7 @@ public class ProductControllerTestesIntegration {
 		String jsonBody = objectmapper.writeValueAsString(productDTO);
 		
 		ResultActions result = mockMvc.perform(put("/products/{id}", existingId)
+				.header("Authorization", "Bearer " + bearerToken)
 				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON));
@@ -83,6 +96,7 @@ public class ProductControllerTestesIntegration {
 		String jsonBody = objectmapper.writeValueAsString(productDTO);
 		
 		ResultActions result = mockMvc.perform(put("/products/{id}", nonExistingId)
+				.header("Authorization", "Bearer " + bearerToken)
 				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON));
