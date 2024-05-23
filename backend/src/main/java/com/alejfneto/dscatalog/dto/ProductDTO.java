@@ -50,6 +50,9 @@ public class ProductDTO {
 		this.price = entity.getPrice();
 		this.imgUrl = entity.getImgUrl();
 		this.date = entity.getDate();
+		for (Category cat : entity.getCategories()) {
+			this.categories.add(new CategoryDTO(cat));
+		}
 	}
 	
 	public ProductDTO(Product entity, Set<Category> categories) {
