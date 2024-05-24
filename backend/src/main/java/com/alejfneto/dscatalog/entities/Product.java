@@ -33,7 +33,7 @@ public class Product {
 	@Column (columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant date;
 	
-	@ManyToMany
+	@ManyToMany //(fetch = FetchType.EAGER)
 	@JoinTable (name = "tb_product_category",
 			joinColumns = @JoinColumn (name = "product_id"),
 			inverseJoinColumns = @JoinColumn (name = "category_id")

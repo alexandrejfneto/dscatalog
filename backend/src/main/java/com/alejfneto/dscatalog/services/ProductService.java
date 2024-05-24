@@ -1,11 +1,14 @@
 package com.alejfneto.dscatalog.services;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,6 +18,7 @@ import com.alejfneto.dscatalog.dto.CategoryDTO;
 import com.alejfneto.dscatalog.dto.ProductDTO;
 import com.alejfneto.dscatalog.entities.Category;
 import com.alejfneto.dscatalog.entities.Product;
+import com.alejfneto.dscatalog.projections.ProductProjection;
 import com.alejfneto.dscatalog.repositories.CategoryRepository;
 import com.alejfneto.dscatalog.repositories.ProductRepository;
 import com.alejfneto.dscatalog.services.exceptions.DatabaseException;
@@ -89,6 +93,27 @@ public class ProductService {
 			entity.getCategories().add(new Category(catEntity.getId(),catEntity.getName()));
 		}
 		return entity;
+	}
+
+	@Transactional(readOnly = true)
+	public Page<ProductDTO> searchProducts(String name, String categoryId, Pageable pageable) {
+		
+		List <Long> catIds = Arrays.asList();
+		if (!"0".equals(categoryId)) {
+		/*String[] vetor = categoryId.split(",");
+		List<String> list = Arrays.asList(vetor);
+		catIds = list.stream().map(x-> Long.parseLong(x)).toList();*/
+		//Linhas acima resumidas em uma única
+		catIds = Arrays.asList(categoryId.split(",")).stream().map(Long::parseLong).toList();
+		}
+		Page<ProductProjection> page = repository.searchProducts(catIds, name, pageable);
+		
+		List <Long> productIds = page.map(x -> x.getId()).toList();
+		List <Product> entities = repository.searchProductsWhithCategories(productIds);
+		List <ProductDTO> dtos = entities.stream().map(x -> new ProductDTO(x, x.getCategories())).toList();
+		
+		Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(),page.getTotalElements());
+		return pageDto;
 	}
 
 }
