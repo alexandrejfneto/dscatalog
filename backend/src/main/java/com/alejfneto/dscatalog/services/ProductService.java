@@ -23,6 +23,7 @@ import com.alejfneto.dscatalog.repositories.CategoryRepository;
 import com.alejfneto.dscatalog.repositories.ProductRepository;
 import com.alejfneto.dscatalog.services.exceptions.DatabaseException;
 import com.alejfneto.dscatalog.services.exceptions.ResourceNotFoundException;
+import com.alejfneto.dscatalog.util.Utils;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -95,6 +96,7 @@ public class ProductService {
 		return entity;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> searchProducts(String name, String categoryId, Pageable pageable) {
 		
@@ -111,6 +113,9 @@ public class ProductService {
 		List <Long> productIds = page.map(x -> x.getId()).toList();
 		List <Product> entities = repository.searchProductsWhithCategories(productIds);
 		List <ProductDTO> dtos = entities.stream().map(x -> new ProductDTO(x, x.getCategories())).toList();
+		//Linhas acima resumidas em uma única
+		//List <ProductDTO> dtos = repository.searchProductsWhithCategories(page.map(x -> x.getId()).toList()).stream().map(x -> new ProductDTO(x, x.getCategories())).toList();
+		entities = (List<Product>) Utils.replace(page.getContent(), entities);
 		
 		Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(),page.getTotalElements());
 		return pageDto;
