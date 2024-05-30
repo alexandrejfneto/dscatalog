@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.alejfneto.dscatalog.services.exceptions.DatabaseException;
+import com.alejfneto.dscatalog.services.exceptions.EmailException;
 import com.alejfneto.dscatalog.services.exceptions.ResourceNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +42,17 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(status).body(error);
 	}
 	
+	@ExceptionHandler (EmailException.class)
+	public ResponseEntity<StandardError> database (EmailException e, HttpServletRequest request){
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		StandardError error = new StandardError();
+		error.setTimestamp(Instant.now());
+		error.setStatus(status.value());
+		error.setError("EmailException");
+		error.setMessage(e.getMessage());
+		error.setPath(request.getRequestURI());
+		return ResponseEntity.status(status).body(error);
+	}
 	
 	@ExceptionHandler (MethodArgumentNotValidException.class)
 	public ResponseEntity<ValidationError> validation (MethodArgumentNotValidException e, HttpServletRequest request){
