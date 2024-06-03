@@ -2,6 +2,7 @@ package com.alejfneto.dscatalog.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +29,9 @@ public class AuthController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PutMapping (value = "/new-password")
-	public ResponseEntity<Void> saveNewPassword (@Valid @RequestBody NewPasswordDTO newPasswordDto){
-		authService.saveNewPassword(newPasswordDto);
+	@PutMapping (value = "/new-password/{token}/{email}")
+	public ResponseEntity<Void> saveNewPassword (@PathVariable String email, @Valid @RequestBody NewPasswordDTO newPasswordDto){
+		authService.saveNewPassword(newPasswordDto, email);
 		return ResponseEntity.noContent().build();
 	}
 	

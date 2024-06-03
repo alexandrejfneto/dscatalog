@@ -12,7 +12,7 @@ import com.alejfneto.dscatalog.entities.PasswordRecover;
 @Repository
 public interface PasswordRecoverRepository extends JpaRepository<PasswordRecover, Long> {
 	
-	@Query("SELECT obj FROM PasswordRecover obj WHERE obj.token = :token AND obj.expiration > :now")
-	List<PasswordRecover> searchValidTokens(String token, Instant now);
+	@Query("SELECT obj FROM PasswordRecover obj WHERE obj.token = :token AND obj.expiration > :now AND obj.email = :email")
+	List<PasswordRecover> searchValidTokens(String token, Instant now, String email);
 
 }

@@ -59,7 +59,7 @@ public class AuthService {
 		entity = passwordRecoverRepository.save(entity);
 		
 		String bodyEmail = "Acesse o link para definir uma nova senha:\n\n"
-				+ recoverUri + token + "\n\n"
+				+ recoverUri + token + "/" + body.getEmail() + "\n\n"
 						+ "Validade de " + tokenMinutes + " minutos.";
 		
 		emailService.sendEmail(body.getEmail(), "Recuperação de senha - DS Catalog", bodyEmail);
@@ -67,11 +67,17 @@ public class AuthService {
 	}
 
 	@Transactional
-	public void saveNewPassword(@Valid NewPasswordDTO newPasswordDto) {
-		List<PasswordRecover> result = passwordRecoverRepository.searchValidTokens(newPasswordDto.getToken(), Instant.now());
+	public void saveNewPassword(@Valid NewPasswordDTO newPasswordDto, String email) {
+		List<PasswordRecover> result = passwordRecoverRepository.searchValidTokens(newPasswordDto.getToken(), Instant.now(), email);
 		if (result.size() == 0) {
 			throw new ResourceNotFoundException("Token inválido");
 		}
+		
+		/*
+		if (!email.equals(result.get(0).getEmail())) {
+			throw new ResourceNotFoundException("Token não pertence ao usuário " + email + " " + result.get(0).getEmail());
+		}
+		*/
 		
 		User user = userRepository.findByEmail(result.get(0).getEmail());
 		user.setPassword(passwordEncoder.encode(newPasswordDto.getPassword()));
