@@ -29,9 +29,9 @@ public class AuthController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PutMapping (value = "/new-password/{token}/{email}")
-	public ResponseEntity<Void> saveNewPassword (@PathVariable String email, @Valid @RequestBody NewPasswordDTO newPasswordDto){
-		authService.saveNewPassword(newPasswordDto, email);
+	@PutMapping (value = "/new-password")
+	public ResponseEntity<Void> saveNewPassword (@Valid @RequestBody NewPasswordDTO newPasswordDto){
+		authService.saveNewPassword(newPasswordDto);
 		return ResponseEntity.noContent().build();
 	}
 	
